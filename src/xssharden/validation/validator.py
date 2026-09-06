@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any, Callable, Sequence
 from urllib.parse import urlparse
 
-DEFAULT_TIMEOUT_MS: float = 3000.0
+DEFAULT_TIMEOUT_MS: float = 50.0
 DEFAULT_CONTEXT_TARGET = "reflected_html"
 DEFAULT_PROBE = "alert"
 

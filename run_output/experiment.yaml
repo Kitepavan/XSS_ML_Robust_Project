@@ -1,0 +1,12 @@
+dataset_path: /home/pavan/XSS_ML_Robust_Project/data/processed/merged_corpus.jsonl
+model: lr
+seed: 42
+target_fpr: 0.01
+budget: 500
+max_per_seed: 2
+max_per_category: 500
+validate_limit: null
+variants_dir: run_output/variants
+models_dir: run_output/models
+output_dir: run_output/experiments
+reports_dir: run_output/reports

@@ -634,6 +634,31 @@ harden (four arms) → report. Stages whose output files already exist are
 skipped unless `--force` is passed. See `configs/experiment.yaml` for all
 available fields.
 
+## Testing your own XSS payloads
+
+Create a JSONL file with your payloads:
+
+```jsonl
+{"payload": "<img src=x onerror=alert(1)>"}
+{"payload": "<svg onload=alert(1)>"}
+```
+
+Then run the experiment:
+
+```bash
+export XSSHARDEN_CUSTOM_VARIANTS="my_payloads.jsonl"
+python3 run_experiment.py
+```
+
+This validates your payloads through the browser, tests them against both detectors, and reports evasion results. No retraining — just testing.
+
+## LLM variant generation (via OpenRouter)
+
+```bash
+export XSSHARDEN_LLM_API_KEY="sk-or-your-key-here"
+python3 test_llm.py  # quick test with 3 seeds
+```
+
 ## Status
 
 Tasks 1–26 complete. 583 tests passing, 2 skipped (xgboost optional).
@@ -641,4 +666,11 @@ Tasks 1–26 complete. 583 tests passing, 2 skipped (xgboost optional).
 **Implemented CLI commands:**
 `dataset build` · `dataset prepare` · `dataset prepare-labeled` · `dataset prepare-kaggle-xss` · `dataset merge` · `validate` · `validate-variants` · `generate` · `generate-llm` · `train` · `attack` · `select` · `run` · `report`
 
-See [`progress.md`](progress.md) for the full task-by-task implementation log.
+**Experimental results (50 custom payloads, no retraining):**
+
+| Detector | Valid Caught | V-ASR |
+|----------|-------------|-------|
+| TF-IDF + Logistic Regression | 33/33 = 100% | 0/33 = 0% |
+| XGBoost | 33/33 = 100% | 0/33 = 0% |
+
+Both detectors catch every valid XSS payload. See [`progress.md`](progress.md) for full experiment results and the task-by-task implementation log.

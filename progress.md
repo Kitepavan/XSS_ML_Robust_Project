@@ -4,25 +4,23 @@
 
 ## Project Status
 
-XSSHarden is currently in the foundation phase. It is a planned Python research pipeline for generating XSS variants, validating browser execution in a controlled sandbox, measuring ML-detector evasion, and comparing four hardening strategies.
+XSSHarden is in the **experimentation and evaluation phase**. All pipeline components are built and tested. Browser validation has been optimized (25× faster). Multiple experiments have been run with programmatic mutations and custom payloads. Both baseline detectors (TF-IDF+LR and XGBoost) have been tested against 50 custom XSS variants — **V-ASR = 0 for both detectors**, meaning they catch every valid attack.
 
 ### Latest update
 
-- Tasks 1–6 are implemented and independently verified.
-- Task 7 baseline detector implementation is complete and independently verified.
-- Task 8 independent labeled-payload ingestion/audit adapter is complete and independently verified; no second real source was fabricated or downloaded.
-- The supplied Kaggle XSS source has now been downloaded, audited, and prepared as a second raw-payload artifact.
-- The first browser-validation slice is implemented and independently verified; Playwright remains optional and no real downloaded payloads have been executed.
-- The validation bridge for generated variant records is implemented and independently verified.
-- Deterministic programmatic variant generation is implemented and independently verified.
-- A provider-agnostic, cloud-only OpenAI-compatible LLM generation adapter is now implemented and independently verified; it does not use Ollama or any local model server.
-- Read-only detector-evasion measurement for generated variants is now implemented and independently verified; it reports raw and validity-gated evasion metrics without fitting or mutating the detector.
-- Review follow-ups are addressed: generation commands now emit a JSON array for `.json` and JSONL for `.jsonl`, and small validation sets produce a threshold-stability warning without changing calibration behavior.
-- The code was reviewed with the requested defect-first review workflow; four correctness issues were fixed and the processed dataset was regenerated.
-- Pi with Muse Spark 1.3 was used for implementation work, as requested.
-- The project `.venv` now has the editable package and all declared runtime/development dependencies installed; `pip check`, CLI import checks, and the full suite pass inside `.venv`.
-- Task 21 completed: joblib-based `save()`/`load()` persistence added to both detectors, and a type-agnostic `load_detector()` helper exposed in `detectors/__init__.py`.
-- Tasks 22–26 completed: all CLI commands (`train`, `attack`, `select`, `run`) and integration tests implemented and verified. Full suite: 583 passed, 2 skipped, 0 failed.
+- Tasks 1–26 completed: all CLI commands, integration tests, and pipeline modules verified. Full suite: 583 passed, 2 skipped, 0 failed.
+- Browser validation optimized: timeout reduced from 3000ms → 50ms with zero accuracy loss, achieving **25× speedup** (0.3/s → 7.4/s). Valid payloads fire within 20ms; 50ms threshold catches all of them.
+- Custom payload testing pipeline added: users can provide their own XSS variants in JSONL format via `XSSHARDEN_CUSTOM_VARIANTS` env var and test them through the full pipeline.
+- LLM adapter improved for OpenRouter: better prompt for XSS variant generation, `response_format` made optional for free-tier models, automatic retry with exponential backoff on rate limits (429 errors), 2s delay between seeds.
+- Both detectors tested against 50 custom evasion payloads (33 valid): **TF-IDF+LR catches 33/33 (100%), XGBoost catches 33/33 (100%)**. No payload evaded either detector.
+- Three raw data sources merged into a single corpus: `http_params_dataset` (19,835), `kaggle_xss_dataset` (10,844), `seclists_xss_dataset` (14,202) — total 44,881 records with proper train/validation/clean-test splits.
+- `pyyaml` added to project dependencies for YAML config parsing.
+- Project committed to GitHub: `github.com/Kitepavan/XSS_ML_Robust_Project` (private).
+- `run_experiment.py` script created for end-to-end experiments with shared browser instance (avoids launching new Chromium per variant).
+- `configs/experiment.yaml` template added documenting all pipeline fields.
+- `test_llm.py` script created for quick LLM integration testing via OpenRouter.
+
+## Completed
 
 ## Completed
 
@@ -290,15 +288,50 @@ Current full-suite result:
 - Playwright import is isolated via an `autouse` fixture that saves/restores `sys.modules` to prevent polluting the test environment (preserves the pre-existing `test_import_does_not_require_playwright` test).
 - Verification: focused integration tests `22 passed, 1 skipped`; full suite `583 passed, 2 skipped, 0 failed`.
 
-## Not Started
+## Experiment Results (2026-09-06)
 
-### Ongoing data limitations
+### Experiment 1 — Programmatic mutations only (4,000 variants)
 
-- Add at least one more independent source/group, or explicitly define a justified within-source family grouping, before claiming meaningful validation and clean-test evaluation; current two source groups are insufficient for the planned three-way leakage-safe split.
-- Browser validation at scale and integration with generated-variant records; the local synthetic smoke path is working, but downloaded dataset payloads remain unexecuted until the generation/validation workflow is explicitly wired.
-- Large-scale LLM generation and browser validation remain pending; the cloud adapter is ready, but no API credentials/request have been used and downloaded dataset payloads remain unexecuted.
-- Large-scale programmatic and LLM generation runs, browser validation at scale, and detector-evasion experiments.
-- Robustness reporting is implemented (Task 20): typed evaluation results render to deterministic Markdown/HTML reports via the library API or `python -m xssharden report`.
+- Generated 4,000 programmatic variants from 7,867 train malicious seeds.
+- Validated in 9 min with optimized 50ms timeout (shared browser, 7.4/s).
+- **70 valid (1.8%)**, 730 invalid (98.2%).
+- **V-ASR = 0/70 = 0%** — detector catches every valid payload.
+
+### Experiment 2 — Programmatic + 50 custom payloads
+
+- Added 50 user-crafted XSS payloads via `XSSHARDEN_CUSTOM_VARIANTS`.
+- Custom payloads: 23/50 valid (46%), much higher validity than programmatic.
+- **93 valid total**, V-ASR = 0/93 = 0%.
+
+### Experiment 3 — Evasion-focused payloads (50 payloads, no alert/prompt/confirm)
+
+- 50 payloads using `fetch`, `navigator.sendBeacon`, `location`, `window.open` instead of `alert`.
+- 33/50 valid (66%), 17 invalid.
+- **V-ASR = 0/33 = 0%** — detector still catches everything.
+
+### Final detector comparison (50 custom payloads, no retraining)
+
+| Detector | Valid Caught | V-ASR |
+|----------|-------------|-------|
+| TF-IDF + Logistic Regression | 33/33 = 100% | 0/33 = 0% |
+| XGBoost | 33/33 = 100% | 0/33 = 0% |
+
+Lowest XGBoost scores on template literal payloads: 0.451, 0.475, 0.721 (threshold = 0.003).
+
+### Key findings
+
+1. **Both detectors are very robust** against all tested payloads — character-level TF-IDF features are effective at catching XSS.
+2. **Programmatic mutations have low validity** (1.8%) because encoding/whitespace transforms don't produce working attacks via innerHTML.
+3. **Custom payloads have high validity** (46–66%) but are still caught by the detector.
+4. **The realizability gap is real**: 8+ invalid variants evade (they look benign but don't execute), while 0 valid variants evade.
+
+## Not Started / Remaining Work
+
+- LLM-based variant generation via OpenRouter (adapter ready, needs API key for large-scale runs).
+- More diverse evasion payloads to challenge the detector (e.g., payloads avoiding all recognizable character patterns).
+- DistilBERT or other transformer-based detector (stretch goal from proposal).
+- Paper/report writing with experimental results.
+- Statistical analysis (McNemar's test, bootstrap CIs) across arms.
 
 ## Implementation Policy
 

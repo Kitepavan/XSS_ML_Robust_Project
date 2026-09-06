@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+  XSSHarden controlled local sandbox fixture (LOCAL USE ONLY).
+
+  Intentionally vulnerable reflected-HTML sink for validating synthetic
+  probe payloads with headless Chromium on this host. Never deploy this
+  file to a networked server and never point the validator at a remote URL.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>XSSHarden local sandbox</title>
+  <script>
+    // Probe hooks: record when alert/confirm/prompt or the custom probe fires.
+    window.__probeFired = false;
+    window.__probeName = null;
+    (function () {
+      var names = ["alert", "confirm", "prompt"];
+      names.forEach(function (name) {
+        try {
+          var original = window[name];
+          window[name] = function () {
+            window.__probeFired = true;
+            window.__probeName = name;
+            try {
+              return original.apply(this, arguments);
+            } catch (e) {
+              return name === "prompt" ? null : undefined;
+            }
+          };
+        } catch (e) { /* keep other hooks armed */ }
+      });
+      window.__xssProbe = function (name) {
+        window.__probeFired = true;
+        window.__probeName = name || "custom";
+      };
+    })();
+
+    // Reflect ?q= (or ?payload=) into the #sink via innerHTML on load.
+    // This is the intentionally vulnerable reflected-HTML sink.
+    document.addEventListener("DOMContentLoaded", function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var value = params.get("q");
+        if (value === null) { value = params.get("payload"); }
+        if (value !== null) {
+          document.querySelector("#sink").innerHTML = value;
+        }
+      } catch (e) { /* fixture stays inert on parse errors */ }
+    });
+  </script>
+</head>
+<body>
+  <h1>XSSHarden local sandbox (reflected_html)</h1>
+  <div id="sink"></div>
+</body>
+</html>

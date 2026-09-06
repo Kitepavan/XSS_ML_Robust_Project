@@ -1,0 +1,53 @@
+"""Deterministic XSS variant generation subpackage."""
+
+from xssharden.generation.llm import (
+    ALLOWED_SEED_SPLITS as LLM_ALLOWED_SEED_SPLITS,
+    ENV_API_KEY as LLM_ENV_API_KEY,
+    ENV_BASE_URL as LLM_ENV_BASE_URL,
+    ENV_MODEL as LLM_ENV_MODEL,
+    ENV_ORGANIZATION as LLM_ENV_ORGANIZATION,
+    ENV_PROJECT as LLM_ENV_PROJECT,
+    ENV_TIMEOUT_S as LLM_ENV_TIMEOUT_S,
+    LLMConfig,
+    LLMConfigurationError,
+    LLMError,
+    LLMGenerationResult,
+    LLMPayloadSubmissionNotAllowedError,
+    LLMResponseError,
+    LLMTimeoutError,
+    LLMTransportError,
+    OpenAICompatibleClient,
+    build_variant_messages,
+    generate_llm_variants,
+    parse_model_content,
+)
+from xssharden.generation.programmatic import (
+    ALLOWED_SEED_SPLITS,
+    SUPPORTED_CATEGORIES,
+    generate_variants,
+)
+
+__all__ = [
+    "ALLOWED_SEED_SPLITS",
+    "LLM_ALLOWED_SEED_SPLITS",
+    "LLM_ENV_API_KEY",
+    "LLM_ENV_BASE_URL",
+    "LLM_ENV_MODEL",
+    "LLM_ENV_ORGANIZATION",
+    "LLM_ENV_PROJECT",
+    "LLM_ENV_TIMEOUT_S",
+    "LLMConfig",
+    "LLMConfigurationError",
+    "LLMError",
+    "LLMGenerationResult",
+    "LLMPayloadSubmissionNotAllowedError",
+    "LLMResponseError",
+    "LLMTimeoutError",
+    "LLMTransportError",
+    "OpenAICompatibleClient",
+    "SUPPORTED_CATEGORIES",
+    "build_variant_messages",
+    "generate_llm_variants",
+    "generate_variants",
+    "parse_model_content",
+]

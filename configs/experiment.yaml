@@ -1,0 +1,28 @@
+# XSSHarden experiment configuration
+# Run with: xssharden run configs/experiment.yaml [--force]
+
+# --- Dataset ---
+dataset_path: data/processed/merged_dataset.jsonl
+
+# --- Detector ---
+model: lr          # "lr" (TF-IDF + Logistic Regression) or "xgb" (XGBoost)
+seed: 42           # Deterministic random state for detectors and selection
+
+# --- Threshold calibration ---
+target_fpr: 0.01   # Target false-positive rate for threshold calibration
+
+# --- Generation ---
+max_per_seed: 10   # Max programmatic variants per seed payload
+max_per_category: null  # Max variants per mutation category (null = unlimited)
+
+# --- Selection ---
+budget: 500        # Augmentation budget for random_valid and selective arms
+
+# --- Validation ---
+validate_limit: null  # Max variants to validate (null = all)
+
+# --- Directories (relative to project root) ---
+variants_dir: variants
+models_dir: models
+output_dir: experiments
+reports_dir: reports

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xssharden"
+version = "0.1.0"
+description = "XSS variant generation, verification, and detector hardening research pipeline"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "XSSHarden Contributors"},
+]
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scikit-learn>=1.3",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+# Detector 2 (XGBoost on lexical/handcrafted features) is a required
+# detector, but its heavy native dependency stays opt-in so the lean
+# install keeps working everywhere. Install it explicitly with:
+#   pip install "xssharden[xgb]"  (or: pip install "xgboost>=2.0")
+xgb = [
+    "xgboost>=2.0",
+]
+
+[project.scripts]
+xssharden = "xssharden.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>XSSHarden Robustness Report</title>
+</head>
+<body>
+<h1>XSSHarden Robustness Report</h1>
+<h2>Experiment metadata</h2>
+<ul>
+<li><strong>adversarial_variants</strong>: 7</li>
+<li><strong>browser_validated</strong>: All variants confirmed valid via Playwright</li>
+<li><strong>date</strong>: 2026-09-07</li>
+<li><strong>detector</strong>: TF-IDF + Logistic Regression</li>
+<li><strong>experiment</strong>: Preliminary Adversarial Hardening Test</li>
+<li><strong>note</strong>: Small augmentation budget (7 variants) — full experiment needs thousands</li>
+<li><strong>training_samples</strong>: 31626</li>
+<li><strong>variant_technique</strong>: Per-char octal concat + newlines + mixed-case event handlers</li>
+</ul>
+<h2>Input counts</h2>
+<ul>
+<li>Clean-test records: 6477</li>
+<li>Adversarial records: 8</li>
+<li>Clean split: clean-test</li>
+<li>Adversarial split: adv_test</li>
+<li>Arm baseline: clean_count=6477, adversarial_count=8</li>
+<li>Arm naive: clean_count=6477, adversarial_count=8</li>
+<li>Arm random_valid: clean_count=6477, adversarial_count=8</li>
+<li>Arm selective: clean_count=6477, adversarial_count=8</li>
+</ul>
+<h2>Arm comparison</h2>
+<table>
+<tr><th>Arm</th><th>Clean acc</th><th>Clean precision</th><th>Clean recall</th><th>Clean F1</th><th>Clean FPR</th><th>V-ASR valid_malicious_evasion_rate (valid evasions / valid malicious)</th><th>Raw raw_evasion_rate (evasions / total)</th><th>Evasion evasion_rate (evasions / malicious)</th></tr>
+<tr><td>baseline</td><td>0.9858</td><td>0.7665</td><td>1.0000</td><td>0.8678</td><td>0.0149</td><td>0.2500 (2/8)</td><td>0.2500 (2/8)</td><td>0.2500 (2/8)</td></tr>
+<tr><td>naive</td><td>0.9866</td><td>0.7763</td><td>1.0000</td><td>0.8741</td><td>0.0141</td><td>0.0000 (0/8)</td><td>0.0000 (0/8)</td><td>0.0000 (0/8)</td></tr>
+<tr><td>random_valid</td><td>0.9866</td><td>0.7763</td><td>1.0000</td><td>0.8741</td><td>0.0141</td><td>0.0000 (0/8)</td><td>0.0000 (0/8)</td><td>0.0000 (0/8)</td></tr>
+<tr><td>selective</td><td>0.9866</td><td>0.7763</td><td>1.0000</td><td>0.8741</td><td>0.0141</td><td>0.0000 (0/8)</td><td>0.0000 (0/8)</td><td>0.0000 (0/8)</td></tr>
+</table>
+<h3>Arm baseline</h3>
+<ul>
+<li>Clean: total=6477, positives=302, negatives=6175, tp=302, tn=6083, fp=92, fn=0</li>
+<li>Clean rates: accuracy=0.9858, precision=0.7665, recall=1.0000, f1=0.8678, fpr=0.0149, threshold=0.0144</li>
+<li>Adversarial: total_records=8, valid_records=8, malicious_count=8, evasion_count=2, valid_malicious_count=8, valid_evasion_count=2</li>
+<li>valid_malicious_evasion_rate (V-ASR)=0.2500 (2/8); raw_evasion_rate=0.2500 (2/8); evasion_rate=0.2500 (2/8); threshold=0.0144</li>
+</ul>
+<h3>Arm naive</h3>
+<ul>
+<li>Clean: total=6477, positives=302, negatives=6175, tp=302, tn=6088, fp=87, fn=0</li>
+<li>Clean rates: accuracy=0.9866, precision=0.7763, recall=1.0000, f1=0.8741, fpr=0.0141, threshold=0.0147</li>
+<li>Adversarial: total_records=8, valid_records=8, malicious_count=8, evasion_count=0, valid_malicious_count=8, valid_evasion_count=0</li>
+<li>valid_malicious_evasion_rate (V-ASR)=0.0000 (0/8); raw_evasion_rate=0.0000 (0/8); evasion_rate=0.0000 (0/8); threshold=0.0147</li>
+</ul>
+<h3>Arm random_valid</h3>
+<ul>
+<li>Clean: total=6477, positives=302, negatives=6175, tp=302, tn=6088, fp=87, fn=0</li>
+<li>Clean rates: accuracy=0.9866, precision=0.7763, recall=1.0000, f1=0.8741, fpr=0.0141, threshold=0.0147</li>
+<li>Adversarial: total_records=8, valid_records=8, malicious_count=8, evasion_count=0, valid_malicious_count=8, valid_evasion_count=0</li>
+<li>valid_malicious_evasion_rate (V-ASR)=0.0000 (0/8); raw_evasion_rate=0.0000 (0/8); evasion_rate=0.0000 (0/8); threshold=0.0147</li>
+</ul>
+<h3>Arm selective</h3>
+<ul>
+<li>Clean: total=6477, positives=302, negatives=6175, tp=302, tn=6088, fp=87, fn=0</li>
+<li>Clean rates: accuracy=0.9866, precision=0.7763, recall=1.0000, f1=0.8741, fpr=0.0141, threshold=0.0147</li>
+<li>Adversarial: total_records=8, valid_records=8, malicious_count=8, evasion_count=0, valid_malicious_count=8, valid_evasion_count=0</li>
+<li>valid_malicious_evasion_rate (V-ASR)=0.0000 (0/8); raw_evasion_rate=0.0000 (0/8); evasion_rate=0.0000 (0/8); threshold=0.0147</li>
+</ul>
+<h2>Methodology</h2>
+<p>Four required arms are compared at a fixed operating threshold: baseline, naive all-valid, budget-matched random-valid, and validity-gated detector-impact-selected augmentation. Validity is a hard gate; the realizability gap (V-ASR over the valid malicious denominator versus the raw evasion rate) is reported with explicit denominators. Held-out splits never influence training, selection, or threshold tuning.</p>
+<h2>Safety notes</h2>
+<p>Payloads are treated as inert strings throughout reporting: nothing is rendered, executed, fetched, or sent anywhere, and raw payload text is excluded from this report by default.</p>
+<h2>Caveat and limitations</h2>
+<p>Caveat: the current two-source data (http_params_dataset plus kaggle_xss_dataset, 2 distinct sources) cannot support meaningful three-way leakage-safe train/validation/clean-test evaluation under group-atomic splitting. Clean-test and adversarial claims stay preliminary until a third independent source is added.</p>
+<p>Negative results are reportable: selective augmentation matching the random-valid control would indicate that validity filtering and additional data matter more than the selection strategy.</p>
+</body>
+</html>

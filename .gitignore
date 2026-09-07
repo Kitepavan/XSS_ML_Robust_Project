@@ -42,3 +42,9 @@ tmp/
 run_output/
 test_payloads*.jsonl
 *.docx
+
+# AI agent files (do not commit)
+AGENTS.md
+docs/superpowers/
+scripts/
+final_test_payloads.jsonl

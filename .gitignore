@@ -39,3 +39,6 @@ data/splits/
 *.joblib
 output/
 tmp/
+run_output/
+test_payloads*.jsonl
+*.docx
